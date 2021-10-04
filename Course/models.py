@@ -25,8 +25,8 @@ class CourseMaterial(models.Model):
     id = models.UUIDField(
         default=uuid.uuid4, unique=True, primary_key=True, editable=False
     )
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=False, null=False)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=False, null=True)
     file = models.FileField(blank=False, null=False, upload_to=file_directory_path)
 
     def __str__(self):
-        return self.file
+        return self.file.name

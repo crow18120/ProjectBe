@@ -93,3 +93,18 @@ class CourseMaterialDetail(APIView):
         material = self.get_object(pk)
         material.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+#FindMaterialsWithCourse
+
+class CourseAndMaterials(APIView):
+    def get_object(self, pk):
+        try:
+            return Course.objects.get(pk=pk)
+        except Course.DoesNotExist:
+            raise Http404 
+    
+    def get(self, request, pk, format=None):
+        self.get_object(pk)
+        materials = CourseMaterial.objects.filter(course__id=pk)
+        serializer = CourseMaterialSerializers(materials, many=True)
+        return Response(serializer.data)
