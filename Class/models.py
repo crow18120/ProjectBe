@@ -1,8 +1,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from datetime import datetime
+from django.utils import timezone
 import uuid
+import pytz
 
 from Course.models import Course
 from User.models import Tutor
@@ -14,7 +15,8 @@ def file_directory_path(instance, filename):
     )
 
 def check_submitted_date(value):
-    if value < datetime.now():
+    print(timezone.localtime())
+    if value  < timezone.now():
         raise ValidationError(
             _('Submitted Date must be in the future.')
         )
