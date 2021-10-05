@@ -24,6 +24,9 @@ class Tutor(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+    def get_fullname(self):
+        return self.first_name + " " + self.last_name
+
 
 class Student(models.Model):
     id = models.UUIDField(
@@ -46,6 +49,10 @@ class Student(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+    def get_fullname(self):
+        return self.first_name + " " + self.last_name
+
+
 class Staff(models.Model):
     id = models.UUIDField(
         default=uuid.uuid4, unique=True, primary_key=True, editable=False
@@ -65,4 +72,7 @@ class Staff(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        return self.first_name + " " + self.last_name
+
+    def get_fullname(self):
         return self.first_name + " " + self.last_name
