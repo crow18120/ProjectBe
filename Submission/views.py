@@ -8,7 +8,7 @@ from .models import Submission, SubmissionMaterial
 
 # Create your views here.
 
-#StudentActivitySerializers
+#SubmissionSerializers
 class SubmissionList(APIView):
     def get(self, request, format=None):
         submissions = Submission.objects.all()
@@ -22,7 +22,8 @@ class SubmissionList(APIView):
         serializer = SubmissionSerializers(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        my_file = data.get('file')
+        my_activity = data.get('activity')
+        my_student = data.get('student')
         return Response(None)   
 
 # class MaterialDetail(APIView):

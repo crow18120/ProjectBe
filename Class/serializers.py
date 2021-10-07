@@ -1,17 +1,12 @@
 from rest_framework import serializers
-from .models import ActivityMaterial, Class, ClassActivity
+from .models import Class, ClassStudent
 
 class ClassSerializers(serializers.ModelSerializer):
     class Meta:
         model = Class
         fields = "__all__"
 
-class ClassActivitySerializers(serializers.ModelSerializer):
+class ClassStudentSerializers(serializers.ModelSerializer):
     class Meta:
-        model = ClassActivity
+        model = ClassStudent
         fields = "__all__"
-
-class ActivityMaterialSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = ActivityMaterial
-        fields = '__all__'
