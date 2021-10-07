@@ -16,9 +16,9 @@ from .serializers import (
 
 # UserSerializers
 USER_GROUP = {
-    1: "Staff",
-    2: "Tutor",
-    3: "Student",
+    '1': "Staff",
+    '2': "Tutor",
+    '3': "Student",
 }
 
 class UserList(APIView):
@@ -186,7 +186,7 @@ class StaffList(APIView):
         serializer = StaffSerializers(staffs, many=True)
         return Response(serializer.data)
 
-class staffDetail(APIView):
+class StaffDetail(APIView):
     def get_object(self, pk):
         try:
             return Staff.objects.get(id=pk)

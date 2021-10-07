@@ -61,7 +61,10 @@ class ActivityList(APIView):
         return Response(serialzer.data)
 
     def post(self, request, format=None):
-        serialzer = ClassActivitySerializers(data=request.data)
+        data = request.data
+        if data.get('is_assignment') and data.get('submitted_date') == None:
+            return Response({'error': 'Assigment needs define the submitted date.'}, status=status.HTTP_400_BAD_REQUEST)
+        serialzer = ClassActivitySerializers(data=data)
         if serialzer.is_valid():
             serialzer.save()
             return Response(serialzer.data, status=status.HTTP_201_CREATED)
@@ -81,6 +84,12 @@ class ActivityDetail(APIView):
 
     def put(self, request, pk, format=None):
         activity = self.get_object(pk)
+        data = request.data
+        data._mutable = True
+        data['class_obj'] = activity.class_obj.id
+        data._mutable = False
+        if data.get('is_assignment') and data.get('submitted_date') == None:
+            return Response({'error': 'Assigment needs define the submitted date.'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = ClassActivitySerializers(activity, data=request.data)
         if serializer.is_valid():
             serializer.save()

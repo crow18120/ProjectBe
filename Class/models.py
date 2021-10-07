@@ -41,7 +41,7 @@ class ClassActivity(models.Model):
     class_obj = models.ForeignKey(
         Class, on_delete=models.CASCADE, blank=False, null=False
     )
-    name = models.CharField(max_length=255, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=255, null=False, blank=False)
     description = models.TextField(null=True, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     submitted_date = models.DateTimeField(
