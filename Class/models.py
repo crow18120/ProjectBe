@@ -24,4 +24,3 @@ class ClassStudent(models.Model):
     )
     class_obj = models.ForeignKey(Class, on_delete=models.CASCADE, null=False, blank=False)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, null=False, blank=False)
-

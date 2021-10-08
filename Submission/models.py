@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 
 from User.models import Student
-from Class.models import ClassActivity
+# from Class.models import ClassActivity
 
 # Create your models here.
 def file_directory_path(instance, filename):

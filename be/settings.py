@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'User.apps.UserConfig',
     'Course.apps.CourseConfig',
     'Class.apps.ClassConfig',
-    'Submission.apps.SubmissionConfig',
+    # 'Submission.apps.SubmissionConfig',
 ]
 
 MIDDLEWARE = [
