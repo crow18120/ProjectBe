@@ -45,6 +45,7 @@ class Activity(models.Model):
         null=True, blank=True,
         validators=[check_submitted_date]
     )
+    is_submit = models.BooleanField(default=False)
     is_assignment = models.BooleanField(default=False, null=False, blank=False)
 
     def __str__(self):

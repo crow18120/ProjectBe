@@ -4,12 +4,15 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.http import Http404
 
+from User.models import Student
+
 from .serializers import (
     ActivitySerializers,
     ActivityMaterialSerializers,
     SubmissionSerializers,
     SubmissionMaterialSerializers,
 )
+from Class.serializers import ClassStudentSerializers
 from .models import Activity, ActivityMaterial, Submission, SubmissionMaterial
 from Class.models import ClassStudent, Class
 
@@ -24,18 +27,26 @@ class ActivityList(APIView):
 
     def post(self, request, format=None):
         data = request.data
+        if data.get('is_assigment'):
+            data._mutable = True
+            data['is_submit'] = True
+            data._mutable = False
         if data.get("is_assignment") and data.get("submitted_date") == None:
             return Response(
                 {"error": "Assigment needs define the submitted date."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        serialzer = ActivitySerializers(data=data)
-        if serialzer.is_valid():
-            serialzer.save()
-
-            return Response(serialzer.data, status=status.HTTP_201_CREATED)
-        return Response(serialzer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        serializer = ActivitySerializers(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        activity = serializer.save()
+        if data.get("is_submit"):
+            class_student = ClassStudent.objects.filter(class_obj__id = data.get('class_obj'))
+            class_student_serializer = ClassStudentSerializers(class_student, many = True)
+            for data in class_student_serializer.data:
+                Submission.objects.create(student = Student.objects.get(id = data.student), activity = Activity.objects.get(id = activity.id), )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
 
 class ActivityDetail(APIView):
     def get_object(self, pk):
@@ -92,7 +103,6 @@ class ActivityMaterialList(APIView):
             )
         return Response(None)
 
-
 class ActivityMaterialDetail(APIView):
     def get_object(self, pk):
         try:
@@ -117,6 +127,7 @@ class ActivityMaterialDetail(APIView):
         material = self.get_object(pk)
         material.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 # SubmissionSerializers
 class SubmissionList(APIView):
@@ -151,6 +162,7 @@ class SubmissionDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # SubmissionMaterialSerializers
 class SubmissionMaterialList(APIView):
@@ -214,6 +226,7 @@ class SubmissionMaterialDetail(APIView):
         material.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 # ClassAndActivities
 class ClassAndActivities(APIView):
     def get_object(self, pk):
@@ -238,7 +251,7 @@ class ActivityAndMaterials(APIView):
 
     def get(self, request, pk, format=None):
         self.get_object(pk)
-        materials = ActivityMaterial.objects.filter(class_activity__id=pk)
+        materials = ActivityMaterial.objects.filter(activity__id=pk)
         serializer = ActivityMaterialSerializers(materials, many=True)
         return Response(serializer.data)
 
