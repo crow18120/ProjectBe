@@ -121,9 +121,11 @@ class StudentDetail(APIView):
     def put(self, request, pk, format=None):
         student = self.get_object(pk)
         data = request.data
+        # data._mutable = True
         data['username'] = student.username
         data['email'] = student.email
         data['user'] = student.user.id
+        # data._mutable = False
         serializer = StudentSerializers(student, data=data)
         if serializer.is_valid():
             serializer.save()
@@ -161,9 +163,11 @@ class TutorDetail(APIView):
     def put(self, request, pk, format=None):
         tutor = self.get_object(pk)
         data = request.data
+        # data._mutable = True
         data['username'] = Tutor.username
         data['email'] = Tutor.email
         data['user'] = Tutor.user.id
+        # data._mutable = False
         serializer = TutorSerializers(tutor, data=data)
         if serializer.is_valid():
             serializer.save()
@@ -201,9 +205,11 @@ class StaffDetail(APIView):
     def put(self, request, pk, format=None):
         staff = self.get_object(pk)
         data = request.data
+        # data._mutable = True
         data['username'] = staff.username
         data['email'] = staff.email
         data['user'] = staff.user.id
+        # data._mutable = False
         serializer = StaffSerializers(staff, data=data)
         if serializer.is_valid():
             serializer.save()

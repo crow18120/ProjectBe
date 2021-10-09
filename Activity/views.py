@@ -1,4 +1,4 @@
-from datetime import timezone
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -27,26 +27,39 @@ class ActivityList(APIView):
 
     def post(self, request, format=None):
         data = request.data
-        if data.get('is_assigment'):
-            data._mutable = True
-            data['is_submit'] = True
-            data._mutable = False
-        if data.get("is_assignment") and data.get("submitted_date") == None:
+        if data.get("is_assignment"):
+            # data._mutable = True
+            data["is_submit"] = True
+            # data._mutable = False
+        if data.get("is_assignment") and data.get("deadline_date") == None:
             return Response(
-                {"error": "Assigment needs define the submitted date."},
+                {"error": "Assigment needs define the deadline date."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         serializer = ActivitySerializers(data=data)
+
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         activity = serializer.save()
+        print(data, data.get("is_submit"))
         if data.get("is_submit"):
-            class_student = ClassStudent.objects.filter(class_obj__id = data.get('class_obj'))
-            class_student_serializer = ClassStudentSerializers(class_student, many = True)
+            class_student = ClassStudent.objects.filter(
+                class_obj__id=data.get("class_obj")
+            )
+            class_student_serializer = ClassStudentSerializers(
+                class_student, many=True
+            )
             for data in class_student_serializer.data:
-                Submission.objects.create(student = Student.objects.get(id = data.student), activity = Activity.objects.get(id = activity.id), )
+                Submission.objects.create(
+                    student=Student.objects.get(id=data['student']),
+                    activity=Activity.objects.get(id=activity.id),
+                    graded = -1
+                )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
 
 class ActivityDetail(APIView):
     def get_object(self, pk):
@@ -60,17 +73,15 @@ class ActivityDetail(APIView):
         serializer = ActivitySerializers(activity)
         return Response(serializer.data)
 
+    #only change the deadline. description. name
     def put(self, request, pk, format=None):
         activity = self.get_object(pk)
         data = request.data
-        data._mutable = True
+        # data._mutable = True
         data["class_obj"] = activity.class_obj.id
-        data._mutable = False
-        if data.get("is_assignment") and data.get("submitted_date") == None:
-            return Response(
-                {"error": "Assigment needs define the submitted date."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        data["is_submit"] = activity.is_submit
+        data["is_assignment"] = activity.is_assignment
+        # data._mutable = False
         serializer = ActivitySerializers(activity, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -102,6 +113,7 @@ class ActivityMaterialList(APIView):
                 file=file, activity=Activity.objects.get(id=my_activity[0])
             )
         return Response(None)
+
 
 class ActivityMaterialDetail(APIView):
     def get_object(self, pk):
@@ -135,6 +147,7 @@ class SubmissionList(APIView):
         submissions = Submission.objects.all()
         serialzer = SubmissionSerializers(submissions, many=True)
         return Response(serialzer.data)
+
 
 class SubmissionDetail(APIView):
     def get_object(self, pk):
@@ -189,6 +202,7 @@ class SubmissionMaterialList(APIView):
         for file in my_file:
             SubmissionMaterial.objects.create(file=file, submission=submission)
         return Response(None)
+
 
 class SubmissionMaterialDetail(APIView):
     def get_object(self, pk):
@@ -255,5 +269,5 @@ class ActivityAndMaterials(APIView):
         serializer = ActivityMaterialSerializers(materials, many=True)
         return Response(serializer.data)
 
+
 # SubmissionAndMaterial
-    

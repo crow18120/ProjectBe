@@ -58,7 +58,7 @@ class ClassStudentList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = ClassSerializers(data=request.data)
+        serializer = ClassStudentSerializers(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -73,12 +73,12 @@ class ClassStudentDetail(APIView):
 
     def get(self, request, pk, format=None):
         class_obj = self.get_object(pk)
-        serializer = ClassSerializers(class_obj)
+        serializer = ClassStudentSerializers(class_obj)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         class_obj = self.get_object(pk)
-        serializer = ClassSerializers(class_obj, data=request.data)
+        serializer = ClassStudentSerializers(class_obj, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
