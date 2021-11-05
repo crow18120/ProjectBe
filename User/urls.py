@@ -11,4 +11,5 @@ urlpatterns = [
     path("tutor/<str:pk>/", views.TutorDetail.as_view(), name="tutor-detail"),
     path("staff/", views.StaffList.as_view(), name="staff-list"),
     path("staff/<str:pk>/", views.StaffDetail.as_view(), name="staff-detail"),
+    path("signout/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
 ]

@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import serializers, status, permissions
 from django.http import Http404
+
+from User.models import Tutor, Student
 
 from .serializers import (
     ClassSerializers,
@@ -24,6 +26,7 @@ class ClassList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ClassDetail(APIView):
     def get_object(self, pk):
@@ -50,7 +53,8 @@ class ClassDetail(APIView):
         class_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#ClassStudentSerializers
+
+# ClassStudentSerializers
 class ClassStudentList(APIView):
     def get(self, request, format=None):
         classes = ClassStudent.objects.all()
@@ -63,6 +67,7 @@ class ClassStudentList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ClassStudentDetail(APIView):
     def get_object(self, pk):
@@ -89,13 +94,30 @@ class ClassStudentDetail(APIView):
         class_obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#SelectClassWithTutor:
 
+# SelectClassWithTutor:
+class ClassTutor(APIView):
+    def get_object(self, pk):
+        try:
+            return Tutor.objects.get(pk=pk)
+        except Tutor.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        self.get_object(pk)
+        classes = Class.objects.filter(tutor_id=pk)
+        serializer = ClassSerializers(classes, many=True)
+        return Response(serializer.data)
 
-
-
-
-
-
-
-
+class ClassWithStudent(APIView):
+    def get_object(self, pk):
+        try:
+            return Student.objects.get(pk=pk)
+        except Student.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        self.get_object(pk)
+        classes = ClassStudent.objects.filter(student_id=pk)
+        serializer = ClassStudentSerializers(classes, many=True)
+        return Response(serializer.data)
