@@ -114,6 +114,6 @@ dmypy.json
 .pyre/
 
 # my_folder_static
-.static
-static/
-.static/
+!static/
+static/*
+!static/*.png

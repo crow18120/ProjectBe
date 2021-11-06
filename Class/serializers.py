@@ -1,10 +1,12 @@
 from rest_framework import serializers
 
 from Course.serializers import CourseSerializers
+from User.serializers import TutorSerializers
 from .models import Class, ClassStudent
 
 class ClassSerializers(serializers.ModelSerializer):
     course = CourseSerializers(many=False)
+    tutor = TutorSerializers(many=False)
 
     class Meta:
         model = Class

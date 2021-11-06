@@ -11,4 +11,5 @@ urlpatterns = [
     path("submission/<str:pk>/", views.SubmissionDetail.as_view(), name="submission-detail"),
     path("su-material/", views.SubmissionMaterialList.as_view(), name="submission-material-list"),
     path("su-material/<str:pk>/", views.SubmissionMaterialDetail.as_view(), name="submission-material-detail"),
+    path("class/<str:pk>/", views.ClassAndActivities.as_view()),
 ]
