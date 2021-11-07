@@ -48,14 +48,12 @@ class ActivityList(APIView):
             class_student = ClassStudent.objects.filter(
                 class_obj__id=data.get("class_obj")
             )
-            class_student_serializer = ClassStudentSerializers(
-                class_student, many=True
-            )
+            class_student_serializer = ClassStudentSerializers(class_student, many=True)
             for data in class_student_serializer.data:
                 Submission.objects.create(
-                    student=Student.objects.get(id=data['student']),
+                    student=Student.objects.get(id=data["student"]),
                     activity=Activity.objects.get(id=activity.id),
-                    graded = -1
+                    graded=-1,
                 )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -73,15 +71,15 @@ class ActivityDetail(APIView):
         serializer = ActivitySerializers(activity)
         return Response(serializer.data)
 
-    #only change the deadline. description. name
+    # only change the deadline. description. name
     def put(self, request, pk, format=None):
         activity = self.get_object(pk)
         data = request.data
-        # data._mutable = True
+        data._mutable = True
         data["class_obj"] = activity.class_obj.id
         data["is_submit"] = activity.is_submit
         data["is_assignment"] = activity.is_assignment
-        # data._mutable = False
+        data._mutable = False
         serializer = ActivitySerializers(activity, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -112,7 +110,12 @@ class ActivityMaterialList(APIView):
             ActivityMaterial.objects.create(
                 file=file, activity=Activity.objects.get(id=my_activity[0])
             )
-        return Response(None)
+        return Response(
+            ActivitySerializers(
+                Activity.objects.get(id=my_activity[0]), many=False
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class ActivityMaterialDetail(APIView):

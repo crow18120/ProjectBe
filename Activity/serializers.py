@@ -6,9 +6,20 @@ from .models import Activity, ActivityMaterial, Submission, SubmissionMaterial
 
 
 class ActivityMaterialSerializers(serializers.ModelSerializer):
+    file_name = serializers.SerializerMethodField()
+    file_type = serializers.SerializerMethodField()
+
     class Meta:
         model = ActivityMaterial
         fields = "__all__"
+
+    def get_file_name(self, obj):
+        file_name = obj.file.name
+        return file_name.split("/")[-1]
+    
+    def get_file_type(self, obj):
+        file_name = self.get_file_name(obj)
+        return file_name.split(".")[-1]
 
 
 class SubmissionMaterialSerializers(serializers.ModelSerializer):
@@ -19,7 +30,7 @@ class SubmissionMaterialSerializers(serializers.ModelSerializer):
 
 class SubmissionSerializers(serializers.ModelSerializer):
     materials = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Submission
         fields = "__all__"
