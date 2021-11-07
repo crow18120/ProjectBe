@@ -77,5 +77,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         elif groups == 3:
             token["account_id"] = str(get_student(pk=user.id).id)
             token["role"] = "student"
+        else: 
+            token["role"] = "admin"
 
         return token

@@ -16,7 +16,7 @@ class Tutor(models.Model):
         null=True,
         blank=True,
         upload_to="profiles/",
-        default="profiles/user-default.png",
+        default="user-default.png",
     )
     location = models.CharField(max_length=255, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -41,7 +41,7 @@ class Student(models.Model):
         null=True,
         blank=True,
         upload_to="profiles/",
-        default="profiles/user-default.png",
+        default="user-default.png",
     )
     location = models.CharField(max_length=255, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -66,7 +66,7 @@ class Staff(models.Model):
         null=True,
         blank=True,
         upload_to="profiles/",
-        default="profiles/user-default.png",
+        default="user-default.png",
     )
     location = models.CharField(max_length=255, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
