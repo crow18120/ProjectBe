@@ -27,15 +27,16 @@ class ActivityList(APIView):
 
     def post(self, request, format=None):
         data = request.data
-        if data.get("is_assignment"):
-            # data._mutable = True
+        print(data)
+        if data.get("is_assignment") and data.get("is_assignment") == True:
+            data._mutable = True
             data["is_submit"] = True
-            # data._mutable = False
-        if data.get("is_assignment") and data.get("deadline_date") == None:
-            return Response(
-                {"error": "Assigment needs define the deadline date."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            data._mutable = False
+            if data.get("deadline_date") == None:
+                return Response(
+                    {"error": "Assigment needs define the deadline date."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         serializer = ActivitySerializers(data=data)
 
@@ -53,7 +54,6 @@ class ActivityList(APIView):
                 Submission.objects.create(
                     student=Student.objects.get(id=data["student"]),
                     activity=Activity.objects.get(id=activity.id),
-                    graded=-1,
                 )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -75,10 +75,10 @@ class ActivityDetail(APIView):
     def put(self, request, pk, format=None):
         activity = self.get_object(pk)
         data = request.data
+        print(data)
         data._mutable = True
         data["class_obj"] = activity.class_obj.id
         data["is_submit"] = activity.is_submit
-        data["is_assignment"] = activity.is_assignment
         data._mutable = False
         serializer = ActivitySerializers(activity, data=request.data)
         if serializer.is_valid():
@@ -101,6 +101,7 @@ class ActivityMaterialList(APIView):
 
     def post(self, request, *args, **kwargs):
         data = request.data
+        print(data)
         serializer = ActivityMaterialSerializers(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

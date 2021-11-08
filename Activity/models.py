@@ -74,7 +74,7 @@ class Submission(models.Model):
         Activity, on_delete=models.CASCADE, null=False, blank=False
     )
     submitted_date = models.DateTimeField(null=True, blank=True)
-    graded = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(-1), MaxValueValidator(100)])
+    graded = models.IntegerField(default= -1, null=False, blank=False, validators=[MinValueValidator(-1), MaxValueValidator(100)])
 
     def __str__(self):
         return self.activity.name + "/" + self.student.first_name
