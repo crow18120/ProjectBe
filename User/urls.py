@@ -12,4 +12,6 @@ urlpatterns = [
     path("staff/", views.StaffList.as_view(), name="staff-list"),
     path("staff/<str:pk>/", views.StaffDetail.as_view(), name="staff-detail"),
     path("signout/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
+    path("stu-class/<str:pk>/", views.StudentsWithClass.as_view()),
+    path("stu-act/<str:pk>/", views.StudentsWithActivity.as_view()),
 ]

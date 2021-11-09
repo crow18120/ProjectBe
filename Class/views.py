@@ -141,3 +141,4 @@ class ClassWithStudent(APIView):
         classes = ClassStudent.objects.filter(student_id=pk)
         serializer = ClassStudentSerializers(classes, many=True)
         return Response(serializer.data)
+        

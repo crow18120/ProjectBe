@@ -7,14 +7,20 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from Activity.models import Activity, Submission
+from Activity.serializers import SubmissionSerializers
+
 from .models import Tutor, Student, Staff
 from .serializers import (
     UserSerializers,
     TutorSerializers,
     StudentSerializers,
     StaffSerializers,
-    MyTokenObtainPairSerializer
+    MyTokenObtainPairSerializer,
 )
+
+from Class.models import Class, ClassStudent
+from Class.serializers import ClassStudentSerializers
 
 # Create your views here.
 
@@ -38,8 +44,10 @@ class BlacklistTokenView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
 
 class UserList(APIView):
     def get(self, request, format=None):
@@ -253,4 +261,29 @@ class StaffDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# TokenSerializers
+# StudentsWithClass
+class StudentsWithClass(APIView):
+    def get_class(self, pk):
+        try:
+            return Class.objects.get(id=pk)
+        except Class.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        self.get_class(pk)
+        studentClass = ClassStudent.objects.filter(class_obj__id=pk)
+        serializer = ClassStudentSerializers(studentClass, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class StudentsWithActivity(APIView):
+    def get_class(self, pk):
+        try:
+            return Activity.objects.get(id=pk)
+        except Activity.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        self.get_class(pk)
+        submission = Submission.objects.filter(activity__id=pk)
+        serializer = SubmissionSerializers(submission, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

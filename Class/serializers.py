@@ -2,8 +2,8 @@ from rest_framework import serializers
 
 from Course.models import Course
 from Course.serializers import CourseSerializers
-from User.models import Tutor
-from User.serializers import TutorSerializers
+from User.models import Student, Tutor
+from User.serializers import StudentSerializers, TutorSerializers
 from .models import Class, ClassStudent
 
 class ClassSerializers(serializers.ModelSerializer):
@@ -26,6 +26,7 @@ class ClassSerializers(serializers.ModelSerializer):
 
 class ClassStudentSerializers(serializers.ModelSerializer):
     class_detail = serializers.SerializerMethodField()
+    student_detail = serializers.SerializerMethodField()
 
     class Meta:
         model = ClassStudent
@@ -34,4 +35,9 @@ class ClassStudentSerializers(serializers.ModelSerializer):
     def get_class_detail(self, obj):
         class_detail = Class.objects.get(id=str(obj.class_obj.id))
         serializer = ClassSerializers(class_detail, many=False)
+        return serializer.data
+
+    def get_student_detail(self, obj):
+        tutor_detail = Student.objects.get(id=str(obj.student.id))
+        serializer = StudentSerializers(tutor_detail, many=False)
         return serializer.data

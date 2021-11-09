@@ -1,3 +1,4 @@
+from django.core import exceptions
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -231,6 +232,11 @@ class SubmissionMaterialDetail(APIView):
                 {"error": "There is too late to update your files."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        if material.submission.graded != -1:
+            return Response(
+                {"error": "Your submission is graded, can't update your files."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         material.submission.submitted_date = timezone.now()
         material.submission.save()
         serializer = ActivityMaterialSerializers(material, data=data)
@@ -274,4 +280,34 @@ class ActivityAndMaterials(APIView):
         return Response(serializer.data)
 
 
-# SubmissionAndMaterial
+# SubmissionAndActivity
+class SubmissionAndActivity(APIView):
+    def get_object(self, pk):
+        try:
+            return Activity.objects.get(pk=pk)
+        except Activity.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        self.get_object(pk)
+        submissions = Submission.objects.filter(activity__id=pk)
+        serializer = SubmissionSerializers(submissions, many=True)
+        return Response(serializer.data)
+
+
+# SubmissionWithActivityAndStudent
+class SubmissionWithActAndStu(APIView):
+    def get(self, request, act, stu, format=None):
+        try:
+            activity_obj = Activity.objects.get(pk=act)
+        except Activity.DoesNotExist:
+            raise exceptions.BadRequest
+
+        try:
+            student_obj = Student.objects.get(pk=stu)
+        except Student.DoesNotExist:
+            raise exceptions.BadRequest
+
+        submissions = Submission.objects.filter(activity__id=act, student__id=stu)
+        serializer = SubmissionSerializers(submissions, many=True)
+        return Response(serializer.data)
