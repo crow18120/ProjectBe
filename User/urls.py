@@ -14,4 +14,5 @@ urlpatterns = [
     path("signout/blacklist/", views.BlacklistTokenView.as_view(), name="blacklist"),
     path("stu-class/<str:pk>/", views.StudentsWithClass.as_view()),
     path("stu-act/<str:pk>/", views.StudentsWithActivity.as_view()),
+    path("tutor-class/<str:pk>/", views.TutorWithClass.as_view()),
 ]

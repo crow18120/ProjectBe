@@ -20,7 +20,7 @@ from .serializers import (
 )
 
 from Class.models import Class, ClassStudent
-from Class.serializers import ClassStudentSerializers
+from Class.serializers import ClassSerializers, ClassStudentSerializers
 
 # Create your views here.
 
@@ -273,7 +273,11 @@ class StudentsWithClass(APIView):
         self.get_class(pk)
         studentClass = ClassStudent.objects.filter(class_obj__id=pk)
         serializer = ClassStudentSerializers(studentClass, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = []
+        for ele in serializer.data:
+            data.append(ele["student_detail"])
+        return Response(data, status=status.HTTP_200_OK)
+
 
 class StudentsWithActivity(APIView):
     def get_class(self, pk):
@@ -287,3 +291,16 @@ class StudentsWithActivity(APIView):
         submission = Submission.objects.filter(activity__id=pk)
         serializer = SubmissionSerializers(submission, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class TutorWithClass(APIView):
+    def get_class(self, pk):
+        try:
+            return Class.objects.get(id=pk)
+        except Class.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        class_obj = self.get_class(pk)
+        serializer = ClassSerializers(class_obj, many=False)
+        return Response(serializer.data["tutor_detail"], status=status.HTTP_200_OK)

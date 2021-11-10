@@ -178,7 +178,7 @@ class SubmissionDetail(APIView):
         serializer = SubmissionSerializers(submission, data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -206,7 +206,12 @@ class SubmissionMaterialList(APIView):
         submission.save()
         for file in my_file:
             SubmissionMaterial.objects.create(file=file, submission=submission)
-        return Response(None)
+        return Response(
+            SubmissionSerializers(
+                Submission.objects.get(id=my_submission[0]), many=False
+            ).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class SubmissionMaterialDetail(APIView):
