@@ -19,6 +19,8 @@ class Tutor(models.Model):
         default="user-default.png",
     )
     location = models.CharField(max_length=255, blank=True, null=True)
+    mobile = models.CharField(max_length=20, blank=True, null=True)
+    DOB = models.DateTimeField(auto_now_add=False, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -44,6 +46,10 @@ class Student(models.Model):
         default="user-default.png",
     )
     location = models.CharField(max_length=255, blank=True, null=True)
+    mobile = models.CharField(max_length=20, blank=True, null=True)
+    DOB = models.DateTimeField(auto_now_add=False, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    interest = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -69,6 +75,8 @@ class Staff(models.Model):
         default="user-default.png",
     )
     location = models.CharField(max_length=255, blank=True, null=True)
+    mobile = models.CharField(max_length=20, blank=True, null=True)
+    DOB = models.DateTimeField(auto_now_add=False, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

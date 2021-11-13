@@ -68,33 +68,35 @@ class UserList(APIView):
             )
             group = Group.objects.get(id=data["groups"][0])
             user.groups.add(group)
-
             if USER_GROUP[data["groups"][0]] == "Staff":
-                Staff.objects.create(
+                staff = Staff.objects.create(
                     user=user,
                     username=data["username"],
                     email=data["email"],
                     first_name=data["first_name"],
                     last_name=data["last_name"],
                 )
+                result = StaffSerializers(staff).data
             elif USER_GROUP[data["groups"][0]] == "Tutor":
-                Tutor.objects.create(
+                tutor = Tutor.objects.create(
                     user=user,
                     username=data["username"],
                     email=data["email"],
                     first_name=data["first_name"],
                     last_name=data["last_name"],
                 )
+                result = TutorSerializers(tutor).data
             else:
-                Student.objects.create(
+                student = Student.objects.create(
                     user=user,
                     username=data["username"],
                     email=data["email"],
                     first_name=data["first_name"],
                     last_name=data["last_name"],
                 )
+                result = StudentSerializers(student).data
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(result, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -120,7 +122,7 @@ class UserDetail(APIView):
             if "password" in data:
                 user.set_password(data["password"])
                 user.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
@@ -152,11 +154,12 @@ class StudentDetail(APIView):
     def put(self, request, pk, format=None):
         student = self.get_object(pk)
         data = request.data
-        # data._mutable = True
+        print(data)
+        data._mutable = True
         data["username"] = student.username
         data["email"] = student.email
         data["user"] = student.user.id
-        # data._mutable = False
+        data._mutable = False
         serializer = StudentSerializers(student, data=data)
         if serializer.is_valid():
             serializer.save()
@@ -164,7 +167,7 @@ class StudentDetail(APIView):
             user.first_name = student.first_name
             user.last_name = student.last_name
             user.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
@@ -196,11 +199,11 @@ class TutorDetail(APIView):
     def put(self, request, pk, format=None):
         tutor = self.get_object(pk)
         data = request.data
-        # data._mutable = True
-        data["username"] = Tutor.username
-        data["email"] = Tutor.email
-        data["user"] = Tutor.user.id
-        # data._mutable = False
+        data._mutable = True
+        data["username"] = tutor.username
+        data["email"] = tutor.email
+        data["user"] = tutor.user.id
+        data._mutable = False
         serializer = TutorSerializers(tutor, data=data)
         if serializer.is_valid():
             serializer.save()
@@ -208,7 +211,7 @@ class TutorDetail(APIView):
             user.first_name = tutor.first_name
             user.last_name = tutor.last_name
             user.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
@@ -240,11 +243,11 @@ class StaffDetail(APIView):
     def put(self, request, pk, format=None):
         staff = self.get_object(pk)
         data = request.data
-        # data._mutable = True
+        data._mutable = True
         data["username"] = staff.username
         data["email"] = staff.email
         data["user"] = staff.user.id
-        # data._mutable = False
+        data._mutable = False
         serializer = StaffSerializers(staff, data=data)
         if serializer.is_valid():
             serializer.save()
@@ -252,7 +255,7 @@ class StaffDetail(APIView):
             user.first_name = staff.first_name
             user.last_name = staff.last_name
             user.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):

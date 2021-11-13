@@ -24,6 +24,7 @@ class CourseList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CourseDetail(APIView):
     # permission_classes = [permissions.IsAuthenticated]
 
@@ -51,7 +52,8 @@ class CourseDetail(APIView):
         course.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#CourseMaterialSerializers
+
+# CourseMaterialSerializers
 class CourseMaterialList(APIView):
     def get(self, request, format=None):
         materials = CourseMaterial.objects.all()
@@ -63,11 +65,17 @@ class CourseMaterialList(APIView):
         serializer = CourseMaterialSerializers(data=data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        my_file = data.pop('file')
-        my_course = data.pop('course')
+        my_file = data.pop("file")
+        my_course = data.pop("course")
         for file in my_file:
-            CourseMaterial.objects.create(file=file, course=Course.objects.get(id = my_course[0]))
-        return Response(None)   
+            CourseMaterial.objects.create(
+                file=file, course=Course.objects.get(id=my_course[0])
+            )
+        return Response(
+            CourseSerializers(Course.objects.get(id=my_course[0])).data,
+            status=status.HTTP_201_CREATED,
+        )
+
 
 class CourseMaterialDetail(APIView):
     def get_object(self, pk):
@@ -94,15 +102,17 @@ class CourseMaterialDetail(APIView):
         material.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#FindMaterialsWithCourse
+
+# FindMaterialsWithCourse
+
 
 class CourseAndMaterials(APIView):
     def get_object(self, pk):
         try:
             return Course.objects.get(pk=pk)
         except Course.DoesNotExist:
-            raise Http404 
-    
+            raise Http404
+
     def get(self, request, pk, format=None):
         self.get_object(pk)
         materials = CourseMaterial.objects.filter(course__id=pk)

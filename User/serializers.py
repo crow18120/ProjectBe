@@ -67,7 +67,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             groups = UserSerializers(user, many=False).data.get("groups")[0]
         else:
             groups = 0
-            
+
         if groups == 1:
             token["account_id"] = str(get_staff(pk=user.id).id)
             token["role"] = "staff"
@@ -77,7 +77,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         elif groups == 3:
             token["account_id"] = str(get_student(pk=user.id).id)
             token["role"] = "student"
-        else: 
+        else:
             token["role"] = "admin"
 
         return token
