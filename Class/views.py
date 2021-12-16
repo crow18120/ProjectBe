@@ -141,4 +141,16 @@ class ClassWithStudent(APIView):
         classes = ClassStudent.objects.filter(student_id=pk)
         serializer = ClassStudentSerializers(classes, many=True)
         return Response(serializer.data)
-        
+
+class ClassStudentWithClass(APIView):
+    def get_object(self, pk):
+        try:
+            return Class.objects.get(pk=pk)
+        except Class.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        self.get_object(pk)
+        classes = ClassStudent.objects.filter(class_obj__id=pk)
+        serializer = ClassStudentSerializers(classes, many=True)
+        return Response(serializer.data)
